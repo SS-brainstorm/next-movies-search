@@ -1,6 +1,6 @@
-import { VideoItem } from "@/types";
-import { toTime } from "@/utils";
 import Image from "next/image";
+import { VideoItem } from "@/types";
+import { dateFormatter, formatTime } from "@/utils";
 
 type VideoListItemProps = {
   item: VideoItem
@@ -9,8 +9,8 @@ type VideoListItemProps = {
 const VideoListItem = ({ item }: VideoListItemProps) => {
   const { title, thumbnail, duration, publish_date, id } = item;
 
-  const date = new Intl.DateTimeFormat('en-US').format(publish_date);
-  const time = toTime(duration);
+  const date = dateFormatter.format(publish_date);
+  const time = formatTime(duration);
 
   return (
     <li className="movies__item video-item">

@@ -1,10 +1,10 @@
 'use client';
 
+import { FormEvent, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getVideos } from "@/actions/video.actions";
 import { VideoItem } from "@/types";
-import { sleep } from "@/utils";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { getQuery, sleep } from "@/utils";
 import VideoListItem from "@/components/VideoListItem/VideoListItem";
 
 type VideoListProps = {
@@ -49,7 +49,7 @@ const VideoList: React.FC<VideoListProps> = ({ list, loaded, total }) => {
         page
       });
   
-      setLoadedCount(prev => loaded);
+      setLoadedCount(loaded);
       setVisibleItems(prevItems => [
         ...prevItems,
         ...data
@@ -62,18 +62,8 @@ const VideoList: React.FC<VideoListProps> = ({ list, loaded, total }) => {
   };
 
   const handleSortChange = (event: FormEvent<HTMLSelectElement> ) => {
-    const currentQuery = new URLSearchParams(Array.from(searchParams.entries()));
     const selectedValue = (event.target as HTMLSelectElement).value;
-
-    if (selectedValue) {
-      currentQuery.set('sortBy', selectedValue)
-    } else {
-      currentQuery.delete('sortBy');
-    }
-
-    const query = currentQuery.size > 0
-      ? `?${currentQuery.toString()}`
-      : '';
+    const query = getQuery(searchParams, 'sortBy', selectedValue);
 
     router.push(pathname + query);
   }

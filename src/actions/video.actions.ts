@@ -24,11 +24,11 @@ export async function getVideos(action?: Partial<VideoActionParams>): Promise<Vi
     let filteredData = [...data];
 
     if (action?.searchParams?.q) {
+      const { q } = action.searchParams;
+
       filteredData = data.filter((video) => {
         const videoTitle = video.title.toLowerCase();
-        const query = action.searchParams!.q.toLowerCase();
-
-        return videoTitle.includes(query);
+        return videoTitle.includes(q.toLowerCase());
       });
     }
 
@@ -65,13 +65,11 @@ export async function getVideoSuggestions(query: string, limit: number = 5): Pro
     const data = await videoData;
     const suggestions = data.filter((video) => {
       const videoTitle = video.title.toLowerCase();
-
       return videoTitle.includes(query.toLowerCase());
     });
 
     return suggestions.slice(0, limit);
   } catch (error: any) {
-    console.error(`Failed to get video suggestions: ${error.message}`)
-    return [];
+    throw new Error(`Failed to get video suggestions: ${error.message}`);
   }
 }

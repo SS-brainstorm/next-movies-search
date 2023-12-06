@@ -4,6 +4,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { VideoItem } from "@/types";
 import { getVideoSuggestions } from "@/actions/video.actions";
+import { getQuery } from "@/utils";
 
 export default function SearchBar() {
   const router = useRouter();
@@ -42,19 +43,10 @@ export default function SearchBar() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const currentQuery = new URLSearchParams(Array.from(searchParams.entries()));
     const formData = new FormData(event.target as HTMLFormElement);
     const searchQuery = formData.get('q');
-
-    if (searchQuery) {
-      currentQuery.set('q', searchQuery.toString());
-    } else {
-      currentQuery.delete('q');
-    }
-
-    const query = currentQuery.size > 0
-      ? `?${currentQuery.toString()}`
-      : '';
+    const searchValue = searchQuery ? searchQuery.toString() : '';
+    const query = getQuery(searchParams, 'q', searchValue)
 
     setSuggestions([]);
     router.push(pathname + query);
@@ -62,8 +54,10 @@ export default function SearchBar() {
 
   const handleSuggestionSelect = (text: string) => {
     const input = searchRef.current as HTMLInputElement;
-    input.value = text;
+
     setSuggestions([]);
+
+    input.value = text;
     input.form?.submit();
   }
 
